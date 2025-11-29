@@ -1,0 +1,52 @@
+site_name: Blockchain Master
+site_description: Od zera do Blockchain Mastera - Kompletny darmowy kurs.
+site_author: Twoje Imię
+repo_url: https://github.com/TWOJ_LOGIN/blockchain-master
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  language: pl
+  palette:
+    # Tryb jasny
+    - scheme: default
+      primary: indigo
+      accent: deep purple
+      toggle:
+        icon: material/weather-sunny
+        name: Przełącz na tryb ciemny
+    # Tryb ciemny
+    - scheme: slate
+      primary: deep purple
+      accent: indigo
+      toggle:
+        icon: material/weather-night
+        name: Przełącz na tryb jasny
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - content.code.copy
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - attr_list
+
+nav:
+  - Start: index.md
+  - Poziom 1: Podstawy:
+    - Moduł 1 - Historia i Filozofia: poziom-1/modul-1.md
+    - Moduł 2 - Fundamenty Techniczne: poziom-1/modul-2.md
+    - Moduł 3 - Decentralizacja: poziom-1/modul-3.md
+  - Poziom 2: Praktyka:
+    - Moduł 4 - Ethereum i Smart Kontrakty: poziom-2/modul-4.md
+    - Moduł 5 - Portfele i Transakcje: poziom-2/modul-5.md
+    - Moduł 6 - DeFi i Bankowość: poziom-2/modul-6.md
+  - Poziom 3: Master:
+    - Moduł 7 - Programowanie Solidity: poziom-3/modul-7.md
+    - Moduł 8 - Bezpieczeństwo: poziom-3/modul-8.md
+    - Moduł 9 - NFT i Przyszłość: poziom-3/modul-9.md
