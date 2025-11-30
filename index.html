@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blockchain Master: Portal Edukacyjny (MVP)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"> 
+    <style>
+        /* Zmienne globalne i reset */
+        :root {
+            --color-primary: #5A67D8; /* Główny kolor: Fiolet/Indygo */
+            --color-secondary: #48BB78; /* Akcent: Zielony */
+            --color-text: #2D3748; /* Ciemny tekst */
+            --color-background: #F7FAFC; /* Jasne tło */
+            --color-card: #FFFFFF; /* Tło kart */
+            --color-border: #E2E8F0;
+            --font-main: 'Roboto', sans-serif;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--color-background);
+            color: var(--color-text);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        /* Nagłówek */
+        header {
+            background-color: var(--color-primary);
+            color: var(--color-card);
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        header h1 {
+            margin: 0;
+            font-size: 2.2em;
+        }
+        
+        /* Główny kontener i układ */
+        .container {
+            display: flex;
+            max-width: 1300px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        /* Pasek boczny (Nawigacja) */
+        .sidebar {
+            width: 300px;
+            flex-shrink: 0;
+            background-color: var(--color-card);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            margin-right: 30px;
+            overflow-y: auto; 
+        }
+        .sidebar h3 {
+            color: var(--color-primary);
+            border-bottom: 2px solid var(--color-border);
+            padding-bottom: 10px;
+            margin-top: 20px;
+        }
+        .module-list {
+            list-style: none;
+            padding: 0;
+            margin: 10px 0 20px 0;
+        }
+        .module-list li {
+            padding: 10px 0;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            border-bottom: 1px dashed var(--color-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .module-list li:hover {
+            background-color: #F0F4F8;
+            padding-left: 5px;
+        }
+        .module-list li.active {
+            font-weight: bold;
+            color: var(--color-secondary);
+            background-color: #E6FFFA;
+            padding-left: 10px;
+            border-left: 4px solid var(--color-secondary);
+        }
+        .module-list li:last-child {
+            border-bottom: none;
+        }
+
+        /* DODANO: Style dla zablokowanych modułów */
+        .lock-icon {
+            color: #E53E3E; /* Czerwony kolor kłódki */
+            margin-left: 8px;
+        }
+
+        .module-list.locked li {
+            color: #A0AEC0 !important; /* Szary, nieaktywny tekst (ważne override dla .active) */
+            cursor: not-allowed !important; /* Kursor informujący o blokadzie */
+            background-color: #F7FAFC !important; /* Lekko ciemniejsze tło */
+            border-left: none !important;
+            padding-left: 0 !important;
+        }
+        .module-list.locked li.active {
+             /* Specyficzny override dla zablokowanych aktywnych elementów */
+            font-weight: normal; 
+        }
+        
+        .module-list.locked li:hover {
+            background-color: #F7FAFC; /* Usuń efekt hovera */
+            padding-left: 0;
+            cursor: not-allowed;
+        }
+        /* KONIEC DODANYCH STYLI */
+
+        /* Główna treść lekcji */
+        .content-main {
+            flex-grow: 1;
+            background-color: var(--color-card);
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+        }
+
+        .content-main h2 {
+            color: var(--color-text);
+            font-size: 1.8em;
+            border-bottom: 2px solid var(--color-border);
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+        
+        /* Style dla sylabusu na stronie głównej */
+        .syllabus-module {
+            background-color: #EDF2F7;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            border-left: 5px solid var(--color-primary);
+        }
+        .syllabus-module strong {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 1.1em;
+            color: var(--color-primary);
+        }
+        .syllabus-level-heading {
+            margin-top: 30px;
+            padding-bottom: 5px;
+            font-size: 1.6em;
+            color: var(--color-text);
+            border-bottom: 2px solid var(--color-border);
+        }
+
+
+        .content-main h3 {
+            color: var(--color-primary);
+            margin-top: 25px;
+            font-size: 1.4em;
+        }
+
+        /* Przyciski nawigacyjne */
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--color-border);
+        }
+
+        .nav-buttons button {
+            background-color: var(--color-primary);
+            color: var(--color-card);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.2s;
+        }
+
+        .nav-buttons button:hover:not(:disabled) {
+            background-color: #4C51BF;
+        }
+
+        .nav-buttons button:disabled {
+            background-color: var(--color-border);
+            color: var(--color-text);
+            cursor: not-allowed;
+        }
+
+        /* Sekcja Quizu */
+        .quiz-section {
+            margin-top: 40px;
+            border-top: 2px solid var(--color-secondary);
+            padding-top: 20px;
+        }
+        .quiz-question {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid var(--color-border);
+            border-radius: 6px;
+        }
+        .quiz-options label {
+            display: block;
+            margin-bottom: 8px;
+            cursor: pointer;
+        }
+        .quiz-options input[type="radio"] {
+            margin-right: 10px;
+        }
+        .quiz-options label:hover {
+            background-color: #F7FAFC;
+        }
+
+        /* Wyniki quizu */
+        #quiz-result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 6px;
+            font-weight: bold;
+            display: none;
+        }
+        .correct-answer-explanation {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #E6FFFA; /* Jasnozielone tło */
+            border-left: 5px solid var(--color-secondary);
+            font-weight: normal;
+        }
+
+        /* Responsywność */
+        @media (max-width: 900px) {
+            .container {
+                flex-direction: column;
+                margin: 20px 10px;
+            }
+            .sidebar {
+                width: 100%;
+                margin-right: 0;
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Blockchain Master 🎓</h1>
+        <p>Portal do nauki Blockchain i Smart Kontraktów</p>
+    </header>
+
+    <div class="container">
+        <nav class="sidebar">
+            <h2>Spis Treści</h2>
+            
+            <h3 data-level="1">🟢 Poziom Podstawowy</h3>
+            <ul class="module-list" data-level="1">
+                <li data-module-id="1.1" class="active">Moduł 1.1: Od zaufania do kryptografii</li>
+                <li data-module-id="1.2">Moduł 1.2: Anatomia Bloku i Hashowanie</li>
+                <li data-module-id="1.3">Moduł 1.3: Mechanizmy Zgody (PoW/PoS)</li>
+            </ul>
+
+            <h3 data-level="2">🟡 Poziom Średni</h3>
+            <ul class="module-list locked" data-level="2">
+                <li data-module-id="2.1">Moduł 2.1: Ethereum – światowy komputer <i class="lock-icon fa-solid fa-lock"></i></li>
+                <li data-module-id="2.2">Moduł 2.2: Waluty, Klucze i Bezpieczeństwo <i class="lock-icon fa-solid fa-lock"></i></li>
+                <li data-module-id="2.3">Moduł 2.3: Logika Smart Kontraktów <i class="lock-icon fa-solid fa-lock"></i></li>
+            </ul>
+
+            <h3 data-level="3">🔴 Poziom Zaawansowany</h3>
+            <ul class="module-list locked" data-level="3">
+                <li data-module-id="3.1">Moduł 3.1: Wstęp do Solidity <i class="lock-icon fa-solid fa-lock"></i></li>
+                <li data-module-id="3.2">Moduł 3.2: Tokenizacja i DeFi <i class="lock-icon fa-solid fa-lock"></i></li>
+                <li data-module-id="3.3">Moduł 3.3: NFT, DAO i Skalowalność <i class="lock-icon fa-solid fa-lock"></i></li>
+            </ul>
+        </nav>
+        <main class="content-main">
+            <div id="lesson-content">
+                </div>
+
+            <div class="quiz-section" id="quiz-container" style="display: none;">
+                <h3>Quiz Sprawdzający Wiedzę</h3>
+                <form id="quiz-form"></form>
+                <button id="submit-quiz">Sprawdź Wyniki</button>
+                <div id="quiz-result"></div>
+            </div>
+
+            <div class="nav-buttons" id="nav-buttons-container" style="display: none;">
+                <button id="prev-module" disabled>← Poprzednia Lekcja</button>
+                <button id="next-module" disabled>Następna Lekcja →</button>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        // -----------------------------------------------------------------------------
+        // 1. TREŚCI LEKCJI (Moduły 1.1 - 1.3 - czysty HTML)
+        // -----------------------------------------------------------------------------
+        const lessonContent = {
+            'home': `
+                <h2>Sylabus Kursu: Blockchain Master</h2>
+                <p>Wybierz moduł z paska bocznego, aby rozpocząć naukę. Po ukończeniu Poziomu 1 i zaliczeniu ostatniego quizu, odblokujesz kolejne poziomy!</p>
+                
+                <h3 class="syllabus-level-heading">🟢 POZIOM 1: PODSTAWY</h3>
+                <p>(Fundamenty i Filozofia) • Dla zupełnie początkujących. Cel: Zrozumienie „dlaczego” i „jak” to działa bez wchodzenia w kod.</p>
+                <div class="syllabus-module">
+                    <strong>Moduł 1.1: Od zaufania do kryptografii – czym jest blockchain?</strong>
+                    Opis: Historia pieniądza i problem zaufania w internecie. Wyjaśnienie idei decentralizacji (Peer-to-Peer) w opozycji do banków centralnych. Kim jest Satoshi Nakamoto i dlaczego Bitcoin zmienił zasady gry.
+                </div>
+                <div class="syllabus-module">
+                    <strong>Moduł 1.2: Anatomia Bloku – jak działa „cyfrowa księga”?</strong>
+                    Opis: Techniczne podstawy w prostych słowach. Co to jest hash, blok i łańcuch? Analogie do szklanego sejfu i publicznego zeszytu. Dlaczego danych w blockchainie nie da się sfałszować (niezmienność).
+                </div>
+                <div class="syllabus-module">
+                    <strong>Moduł 1.3: Mechanizmy Zgody – górnicy i walidatorzy.</strong>
+                    Opis: Jak sieć podejmuje decyzje bez szefa? Wyjaśnienie Proof of Work (kopanie) i Proof of Stake (staking). Ekologia a blockchain. Rola węzłów (nodes) w sieci.
+                </div>
+                
+                <h3 class="syllabus-level-heading">🟡 POZIOM 2: ŚREDNI (ZABLOKOWANY 🔒)</h3>
+                <p>(Ethereum i Smart Kontrakty) • Dla osób, które rozumieją teorię i chcą poznać praktyczne zastosowania.</p>
+                 <div class="syllabus-module">
+                    <strong>Moduł 2.1: Ethereum – światowy komputer.</strong>
+                    Opis: Różnica między Bitcoinem (kalkulator) a Ethereum (smartfon). Wprowadzenie do "paliwa" sieci, czyli czym jest Gas i dlaczego trzeba za niego płacić. Maszyna wirtualna Ethereum (EVM).
+                </div>
+                <div class="syllabus-module">
+                    <strong>Moduł 2.2: Smart Kontrakty – umowy, które wykonują się same.</strong>
+                    Opis: Definicja Smart Kontraktu: "Jeśli X, to Y". Przykłady z życia: automatyczne ubezpieczenia, zbiórki crowdfundingowe, escrow. Zalety (szybkość, brak pośredników) i ryzyka (błędy w kodzie).
+                </div>
+                <div class="syllabus-module">
+                    <strong>Moduł 2.3: Portfel, Klucze i Bezpieczeństwo.</strong>
+                    Opis: Jak bezpiecznie wchodzić w interakcje z blockchainem. Różnica między kluczem publicznym (numer konta) a prywatnym (hasło). Czym jest MetaMask. Zasada "Not your keys, not your coins".
+                </div>
+
+                <h3 class="syllabus-level-heading">🔴 POZIOM 3: ZAAWANSOWANY (ZABLOKOWANY 🔒)</h3>
+                <p>(Programowanie i Nowe Horyzonty) • Dla osób chcących zrozumieć, co dzieje się „pod maską” i poznać nowoczesne trendy.</p>
+                 <div class="syllabus-module">
+                    <strong>Moduł 3.1: Wstęp do Solidity – język blockchaina.</strong>
+                    Opis: Podstawy składni najpopularniejszego języka programowania kontraktów. Struktura prostego kontraktu: zmienne, funkcje, modyfikatory. Analiza kodu "Hello World" w blockchainie.
+                </div>
+                <div class="syllabus-module">
+                    <strong>Moduł 3.2: Tokenizacja i Standardy (ERC-20 i NFT).</strong>
+                    Opis: Jak stworzyć własną walutę? Różnica między tokenami zamiennymi (pieniądze) a niezamiennymi (NFT - sztuka, akty własności). Praktyczne zastosowanie tokenów w biznesie.
+                </div>
+                <div class="syllabus-module">
+                    <strong>Moduł 3.3: Przyszłość: DeFi, DAO i Skalowalność.</strong>
+                    Opis: Czym są Zdecentralizowane Finanse (banki bez banków) i Zdecentralizowane Organizacje Autonomiczne (firmy bez prezesów). Problemy z prędkością sieci i rozwiązania warstwy drugiej (Layer 2).
+                </div>
+            `,
+            '1.1': `
+                <h2>🎓 Moduł 1.1: Od zaufania do kryptografii – czym jest blockchain?</h2>
+                <p>Witaj w świecie Blockchain! Zanim zaczniemy mówić o skomplikowanych algorytmach, musimy cofnąć się o krok i zadać sobie proste pytanie: <strong>Czym tak naprawdę jest pieniądz?</strong></p>
+
+                <p>Pieniądz to nie papier w portfelu ani cyferki na koncie. Pieniądz to przede wszystkim <strong>zaufanie<\strong>. Wierzysz, że za ten kolorowy papierek otrzymasz kawę, a barista wierzy, że za ten sam papierek kupi mleko. Ale jak przenieść to zaufanie do świata cyfrowego, gdzie wszystko można skopiować jednym kliknięciem?</p>
+
+                <h3>🛑 Problem: Kopiuj-Wklej (Podwójne Wydawanie)</h3>
+                <p>Wyobraź sobie, że wysyłasz znajomemu zdjęcie z wakacji e-mailem. On je otrzymuje, ale Ty nadal masz je na swoim komputerze. To świetna cecha informacji, ale fatalna cecha pieniądza.</p>
+                
+                <p>Jeśli wyślesz komuś cyfrową monetę, <strong>nie możesz jej zatrzymać</strong>. Musi ona zniknąć z Twojego portfela. W informatyce nazywamy to problemem <strong>"Double Spending"</strong> (Podwójnego Wydawania). </p>
+
+                <h4>Pośrednicy – jedyne rozwiązanie do 2008 roku:</h4>
+                <ul>
+                    <li><strong>Banki, PayPal</strong> czy <strong>Visa</strong> prowadzą swoje prywatne księgi.</li>
+                    <li>Kiedy płacisz kartą, bank sprawdza w swojej bazie: "Czy Jan ma pieniądze?". Jeśli tak, odejmuje je Tobie i dopisuje sprzedawcy.</li>
+                    <li>Musimy <strong>ufać bankowi</strong>, że nie popełni błędu, nie zbankrutuje i nikt go nie okradnie.</li>
+                </ul>
+
+                <h3>🌐 Rewolucja: Scentralizowany vs. Rozproszony</h3>
+                <p>Blockchain zmienił wszystko, <strong>usuwając pośrednika</strong>. Aby to zrozumieć, użyjmy analogii biurowej:</p>
+
+                <h4>1. Model Scentralizowany (Bank)</h4>
+                <p>Wyobraź sobie <strong>plik Excel na komputerze szefa</strong>. Tylko szef ma do niego dostęp.</p>
+                <ul>
+                    <li>Jeśli chcesz coś zmienić, musisz wysłać prośbę do szefa.</li>
+                    <li>Jeśli szef wyleje kawę na komputer, wszyscy tracą dane (<strong>Single Point of Failure</strong>).</li>
+                    <li>Jeśli szef jest nieuczciwy, może potajemnie zmienić cyferki, a Ty się o tym nie dowiesz.</li>
+                </ul>
+
+                <h4>2. Model Rozproszony (Blockchain)</h4>
+                <p>Wyobraź sobie <strong>Wspólny Dokument Google (Google Docs)</strong> udostępniony tysiącom osób (Węzłów).</p>
+                <ul>
+                    <li>Każdy widzi ten sam dokument w tym samym czasie (<strong>Transparentność</strong>).</li>
+                    <li>Każda zmiana jest widoczna dla wszystkich na żywo.</li>
+                    <li>Nikt nie może potajemnie wymazać historii zmian (<strong>Niezmienność</strong>).</li>
+                    <li>Jeśli komputer jednej osoby padnie, tysiące innych nadal mają kopię dokumentu (<strong>Odporność na awarie</strong>).</li>
+                </ul>
+                <p>Blockchain to właśnie taki "magiczny dokument", którego nikt nie trzyma na własność, ale każdy ma jego kopię. Wszystko to zaczęło się w 2008 roku, kiedy tajemniczy <strong>Satoshi Nakamoto</strong> opublikował dokument opisujący Bitcoina.</p>
+
+                <hr>
+                <div style="padding: 15px; background: #FEEBCF; border-radius: 4px;">
+                    <h4>📝 Kluczowe wnioski z tej lekcji:</h4>
+                    <ul>
+                        <li>Problem podwójnego wydawania został rozwiązany przez rozproszoną, publiczną Księgę Główną.</li>
+                        <li>Blockchain to przesunięcie zaufania z instytucji na <strong>niezmienną matematykę i kod</strong>.</li>
+                    </ul>
+                </div>
+            `,
+			'1.1': `
+                <h2>🎓 Moduł 1.1: Od zaufania do kryptografii – czym jest blockchain?</h2>
+                <p>Witaj w świecie Blockchain! Zanim zaczniemy mówić o skomplikowanych algorytmach, musimy cofnąć się o krok i zadać sobie proste pytanie: <strong>Czym tak naprawdę jest pieniądz?</strong></p>
+
+                <p>Pieniądz to nie papier w portfelu ani cyferki na koncie. Pieniądz to przede wszystkim <strong>zaufanie</strong>. Wierzysz, że za ten kolorowy papierek otrzymasz kawę, a barista wierzy, że za ten sam papierek kupi mleko. Ale jak przenieść to zaufanie do świata cyfrowego, gdzie wszystko można skopiować jednym kliknięciem?</p>
+
+                <h3>🛑 Problem: Kopiuj-Wklej (Podwójne Wydawanie)</h3>
+                <p>Wyobraź sobie, że wysyłasz znajomemu zdjęcie z wakacji e-mailem. On je otrzymuje, ale Ty nadal masz je na swoim komputerze. To świetna cecha informacji, ale fatalna cecha pieniądza.</p>
+                
+                <p>Jeśli wyślesz komuś cyfrową monetę, <strong>nie możesz jej zatrzymać</strong>. Musi ona zniknąć z Twojego portfela. W informatyce nazywamy to problemem <strong>"Double Spending"</strong> (Podwójnego Wydawania). </p>
+
+                <h4>Pośrednicy – jedyne rozwiązanie do 2008 roku:</h4>
+                <ul>
+                    <li><strong>Banki, PayPal</strong> czy <strong>Visa</strong> prowadzą swoje prywatne księgi.</li>
+                    <li>Kiedy płacisz kartą, bank sprawdza w swojej bazie: "Czy Jan ma pieniądze?". Jeśli tak, odejmuje je Tobie i dopisuje sprzedawcy.</li>
+                    <li>Musimy <strong>ufać bankowi</strong>, że nie popełni błędu, nie zbankrutuje i nikt go nie okradnie.</li>
+                </ul>
+
+                <h3>🌐 Rewolucja: Scentralizowany vs. Rozproszony</h3>
+                <p>Blockchain zmienił wszystko, <strong>usuwając pośrednika</strong>. Aby to zrozumieć, użyjmy analogii biurowej:</p>
+
+                <h4>1. Model Scentralizowany (Bank)</h4>
+                <p>Wyobraź sobie <strong>plik Excel na komputerze szefa</strong>. Tylko szef ma do niego dostęp.</p>
+                <ul>
+                    <li>Jeśli chcesz coś zmienić, musisz wysłać prośbę do szefa.</li>
+                    <li>Jeśli szef wyleje kawę na komputer, wszyscy tracą dane (<strong>Single Point of Failure</strong>).</li>
+                    <li>Jeśli szef jest nieuczciwy, może potajemnie zmienić cyferki, a Ty się o tym nie dowiesz.</li>
+                </ul>
+
+                <h4>2. Model Rozproszony (Blockchain)</h4>
+                <p>Wyobraź sobie <strong>Wspólny Dokument Google (Google Docs)</strong> udostępniony tysiącom osób (Węzłów).</p>
+                <ul>
+                    <li>Każdy widzi ten sam dokument w tym samym czasie (<strong>Transparentność</strong>).</li>
+                    <li>Każda zmiana jest widoczna dla wszystkich na żywo.</li>
+                    <li>Nikt nie może potajemnie wymazać historii zmian (<strong>Niezmienność</strong>).</li>
+                    <li>Jeśli komputer jednej osoby padnie, tysiące innych nadal mają kopię dokumentu (<strong>Odporność na awarie</strong>).</li>
+                </ul>
+
+                <hr>
+
+                <h3>🔑 Kluczowe pojęcia (Twój słowniczek)</h3>
+                <p>Aby poruszać się w tym świecie, musisz znać dwa terminy:</p>
+                
+                <h4>1. Ledger (Księga Główna)</h4>
+                <p>To po prostu rejestr wszystkich transakcji, jakie kiedykolwiek miały miejsce. W banku ta księga jest ukryta w sejfie. W Blockchainie ta księga jest:</p>
+                <ul>
+                    <li><strong>Publiczna:</strong> Każdy może do niej zajrzeć.</li>
+                    <li><strong>Niezmienna:</strong> Raz zapisanej transakcji nie da się wymazać (jak napisanie czegoś długopisem w kamieniu, a nie ołówkiem na papierze).</li>
+                </ul>
+
+                <h4>2. Peer-to-Peer (P2P)</h4>
+                <p>Oznacza <strong>"Osoba do Osoby"</strong> (bez serwera pośrodku).</p>
+                <ul>
+                    <li>Kiedy pobierasz plik z centralnego serwera – to nie jest P2P.</li>
+                    <li>Kiedy przekazujesz gotówkę koledze z ręki do ręki – to jest P2P w świecie fizycznym.</li>
+                    <li>Blockchain pozwala na <strong>cyfrowe przekazanie wartości "z ręki do ręki"</strong>, pomijając banki.</li>
+                </ul>
+
+                <hr>
+
+                <div style="padding: 15px; background: #E6FFFA; border-radius: 4px; border: 1px solid #9AE6B4;">
+                    <h3>💡 Dlaczego to jest ważne?</h3>
+                    <p>W 2008 roku tajemnicza postać o pseudonimie <strong>Satoshi Nakamoto</strong> opublikowała dokument opisujący Bitcoina. Po raz pierwszy w historii ludzkości rozwiązano problem "podwójnego wydawania" bez użycia banku. <strong>Zaufanie zostało przeniesione z instytucji</strong> (ludzi, którzy mogą kłamać) na <strong>matematykę i kryptografię</strong> (która jest bezstronna).</p>
+                </div>
+
+                <hr>
+                
+                <div style="padding: 15px; background: #FEEBCF; border-radius: 4px;">
+                    <h4>📝 Kluczowe wnioski z tej lekcji:</h4>
+                    <ul>
+                        <li><strong>Problem podwójnego wydawania:</strong> W internecie łatwo kopiować pliki, ale pieniądza nie można kopiować. Blockchain to blokuje.</li>
+                        <li><strong>Decentralizacja:</strong> Zamiast jednej bazy danych w banku (jak plik Excel), mamy bazę rozproszoną na tysiącach komputerów (jak Google Docs).</li>
+                        <li><strong>Ledger (Księga):</strong> To historia wszystkich transakcji, która jest publiczna i niemożliwa do sfałszowania (Niezmienna).</li>
+                        <li><strong>P2P:</strong> Przesyłamy wartość bezpośrednio do siebie, bez pośredników.</li>
+                    </ul>
+                </div>
+				<p style="text-align: center; margin: 20px 0;">
+				<img src="assets/blockchain_usage.jpg" alt="Wizualizacja: Czym może być Blockchain" width="100%">
+				</p>
+            `,
+
+			'1.2': `
+                <h2>🎓 Moduł 1.2: Anatomia Bloku – jak działa „cyfrowa księga”?</h2>
+                <p>W poprzedniej lekcji dowiedziałeś się, że Blockchain to wspólna, cyfrowa księga. Dzisiaj zajrzymy do środka i zobaczymy, jak ta księga jest zszyta, że nie da się z niej wyrwać kartek.</p>
+                <p>Zrozumienie budowy bloku to moment "Aha!", w którym magia zmienia się w logikę.</p>
+
+                <h3>📦 Co to jest BLOK? (Cyfrowy Kontener)</h3>
+                <p>Wyobraź sobie, że Blockchain to pociąg. Każdy wagon to jeden <strong>Blok</strong>. Co znajduje się w środku takiego wagonu (bloku)? Zazwyczaj trzy kluczowe rzeczy:</p>
+                <ul>
+                    <li><strong>Dane:</strong> W przypadku Bitcoina są to informacje o transakcjach (np. "Alicja wysłała 5 BTC do Boba").</li>
+                    <li><strong>Hash (Odcisk Palca):</strong> Unikalny identyfikator kryptograficzny tego konkretnego bloku.</li>
+                    <li><strong>Hash poprzedniego bloku:</strong> To jest właśnie ten "hak", który łączy wagony ze sobą.</li>
+                </ul>
+
+                <h3>☝️ Co to jest HASH? (Cyfrowy Odcisk Palca)</h3>
+                <p>To najważniejsze pojęcie w tej lekcji. <strong>Hash</strong> to wynik działania matematycznego (funkcji skrótu). Działa jak magiczna maszynka do mięsa:</p>
+                <ul>
+                    <li>Wrzucasz do niej dowolne dane (jedno słowo lub całą encyklopedię).</li>
+                    <li>Maszynka mieli to i wypluwa ciąg znaków o <strong>stałej długości</strong> (np. <code>4a192x...</code>).</li>
+                </ul>
+                
+                <h4>Dwie żelazne zasady HASH-a:</h4>
+                <ol>
+                    <li><strong>Jednokierunkowość:</strong> Z hasha nie odczytasz danych wejściowych, ale możesz łatwo sprawdzić, czy dane pasują do hasha.</li>
+                    <li><strong>Wrażliwość (Efekt Motyla):</strong> Jeśli zmienisz w danych wejściowych choćby przecinek na kropkę, hash wyjściowy zmieni się <strong>całkowicie</strong>.</li>
+                </ol>
+
+                <p style="margin-top: 15px; padding: 10px; background-color: #F7FAFC; border-left: 3px solid #E2E8F0;">
+                    <strong>Przykład:</strong><br>
+                    Dane: "Kocham Blockchain" ➡️ Hash: <code>X921...</code><br>
+                    Dane: "Kocham Blockchain!" (dodałem wykrzyknik) ➡️ Hash: <code>B775...</code> (zupełnie inny!)
+                </p>
+
+                <h3>🔗 ŁAŃCUCH (Chain) – Jak to się łączy?</h3>
+                <p>Tu dzieje się magia bezpieczeństwa. Pamiętasz, że każdy blok zawiera <strong>Hash poprzedniego bloku</strong>?</p>
+                <ol>
+                    <li>Mamy <strong>Blok nr 1</strong>. Ma swój Hash (np. H1).</li>
+                    <li>Tworzymy <strong>Blok nr 2</strong>. Wkładamy do niego nowe transakcje ORAZ <strong>Hash Bloku nr 1</strong> (H1).</li>
+                    <li>Tworzymy <strong>Blok nr 3</strong>. Wkładamy transakcje ORAZ <strong>Hash Bloku nr 2</strong> (H2).</li>
+                </ol>
+                <p style="text-align: center; margin: 20px 0;">
+
+				<img src="assets/blockchain.png" alt="Wizualizacja bloków połączonych za pomocą hashów" width="100%">
+				</p>
+                <p class="text-center"><em>Powyższy schemat ilustruje nierozerwalne, kryptograficzne połączenie bloków.</em></p>
+
+                <h3>🛡️ Dlaczego tego nie da się sfałszować? (Niezmienność)</h3>
+                <p>Załóżmy, że haker chce zmienić transakcję w starym <strong>Bloku nr 1</strong> (chce cofnąć swój przelew).</p>
+                <ol>
+                    <li>Haker wchodzi do Bloku nr 1 i zmienia dane.</li>
+                    <li><strong>STOP!</strong> Zmieniły się dane, więc zmienił się Hash Bloku nr 1 (zasada wrażliwości!).</li>
+                    <li>Ale Blok nr 2 zawiera <strong>stary</strong> Hash Bloku nr 1. Teraz te puzzle do siebie nie pasują! Łańcuch został zerwany.</li>
+                    <li>Aby naprawić łańcuch, haker musiałby przeliczyć i naprawić Hash Bloku nr 2.</li>
+                    <li>Ale wtedy zmieni się Hash Bloku nr 2, więc zerwie się połączenie z Blokiem nr 3 i tak dalej...</li>
+                </ol>
+                <p><strong>Wniosek:</strong> Aby sfałszować jeden stary blok, musiałbyś przeliczyć i naprawić <strong>wszystkie kolejne bloki</strong> (miliony) w łańcuchu. W dużej sieci jest to matematycznie niemożliwe (wymagałoby gigantycznej mocy obliczeniowej).</p>
+
+                <hr>
+
+                <h3>🏛️ Analogia Szklanego Sejfu</h3>
+                <p>Wyobraź sobie Blockchain jako wieżę ze <strong>szklanych sejfów</strong> ustawionych jeden na drugim. To jest wizualizacja, dlaczego zmiana danych w przeszłości jest niemożliwa:</p>
+                <ul>
+                    <li>Gdy sejf jest pełny transakcji (Blok), zamykamy go.</li>
+                    <li>Na szkle grawerujemy unikalny kod (<strong>Hash</strong>), który zależy od zawartości sejfu.</li>
+                    <li>Stawiamy na nim kolejny sejf.</li>
+                    <li><strong>Kluczowe:</strong> Dno nowego sejfu jest tak wyprofilowane, że pasuje <strong>tylko</strong> do wygrawerowanego wzoru na sejfie poniżej.</li>
+                </ul>
+                <p>Jeśli zbijesz szybę w dolnym sejfie, żeby coś ukraść, cała wieża powyżej się zawali, bo łączenia przestaną pasować. Wszyscy to usłyszą i zobaczą (dzięki rozproszonym kopiom).</p>
+
+                <hr>
+                
+                <div style="padding: 15px; background: #FEEBCF; border-radius: 4px;">
+                    <h4>📝 Kluczowe wnioski z tej lekcji:</h4>
+                    <ul>
+                        <li><strong>Blok:</strong> To paczka danych (transakcji) z unikalnym identyfikatorem.</li>
+                        <li><strong>Hash:</strong> Cyfrowy odcisk palca. Nawet najmniejsza zmiana danych zmienia Hash całkowicie. To gwarantuje, że nikt nie majstrował przy danych.</li>
+                        <li><strong>Łańcuch (Chain):</strong> Każdy nowy blok zawiera odcisk palca poprzedniego. To tworzy nierozerwalną więź.</li>
+                        <li><strong>Bezpieczeństwo:</strong> Próba oszustwa w przeszłości wymagałaby zmiany całej historii łańcucha, co jest niewykonalne.</li>
+                    </ul>
+                </div>
+            `,
+			'1.3': `
+                <h2>🎓 Moduł 1.3: Mechanizmy Zgody – jak sieć podejmuje decyzje bez szefa?</h2>
+                <p>Wiesz już, że Blockchain to księga, której nikt nie może sfałszować. Ale kto ma prawo wpisać do niej nową stronę (nowy blok)?</p>
+                <p>W banku (system scentralizowany) decyduje o tym szef lub główny serwer. W Blockchainie (system rozproszony) nie ma szefa. Są tysiące nieznajomych ludzi. Jak sprawić, żeby wszyscy zgodzili się co do tego, która wersja historii jest prawdziwa?</p>
+
+                <p>Potrzebujemy <strong>Mechanizmu Zgody (Consensus Mechanism)</strong>. To zbiór reguł, które mówią: "Ten, kto wykona zadanie X, ma prawo dodać nowy blok".</p>
+                
+                <hr>
+
+                <h3>⛏️ 1. Proof of Work (PoW) – Dowód Pracy (Górnicy)</h3>
+                <p>To najstarsza metoda, używana przez <strong>Bitcoina</strong>.</p>
+                
+                <h4>Jak to działa? (Analogia Loterii Sudoku):</h4>
+                <p>Wyobraź sobie, że aby dodać stronę do księgi, musisz najpierw rozwiązać piekielnie trudne matematyczne Sudoku.</p>
+                <ul>
+                    <li>Tysiące komputerów na świecie (<strong>Górnicy</strong>) ścigają się, kto pierwszy rozwiąże zagadkę.</li>
+                    <li>Rozwiązanie wymaga ogromnej mocy obliczeniowej i prądu (to jest ta "Praca").</li>
+                    <li>Ten, kto pierwszy znajdzie rozwiązanie, krzyczy do sieci: "Mam!".</li>
+                    <li>Inni sprawdzają wynik (sprawdzenie jest łatwe, jak rzut okiem na rozwiązane Sudoku).</li>
+                    <li>Zwycięzca dodaje blok i otrzymuje nagrodę w Bitcoinach.</li>
+                </ul>
+                <p><strong>Dlaczego to jest bezpieczne?</strong> Ponieważ oszukiwanie jest <strong>nieopłacalne</strong>. Aby sfałszować blok, musiałbyś mieć więcej komputerów niż cała reszta świata razem wzięta (tzw. atak 51%), co kosztowałoby miliardy dolarów w rachunkach za prąd.</p>
+
+                <hr>
+
+                <h3>🥩 2. Proof of Stake (PoS) – Dowód Stawki (Walidatorzy)</h3>
+                <p>To nowocześniejsza metoda, używana obecnie przez <strong>Ethereum</strong> (po wielkiej aktualizacji zwanej "The Merge").</p>
+
+                <h4>Jak to działa? (Analogia Kaucji):</h4>
+                <p>Tutaj nie potrzebujesz koparek ani ogromnej ilości prądu.</p>
+                <ul>
+                    <li>Aby brać udział w grze, musisz wpłacić kaucję (zastawić swoje kryptowaluty). Nazywamy to <strong>Stakingiem</strong>.</li>
+                    <li>Komputery nazywamy tu <strong>Walidatorami</strong>.</li>
+                    <li>Sieć losuje walidatora, który doda nowy blok (im większa kaucja, tym większa szansa na wylosowanie).</li>
+                    <li>Jeśli walidator będzie uczciwy – dostanie nagrodę.</li>
+                    <li>Jeśli walidator spróbuje oszukać (np. zatwierdzi fałszywą transakcję) – sieć <strong>zabierze jego kaucję (Slashing)</strong>.</li>
+                </ul>
+                <p><strong>Zaleta:</strong> Ta metoda zużywa <strong>99,9% mniej energii</strong> niż Proof of Work, ponieważ nie wymaga skomplikowanych obliczeń.</p>
+                
+                <p style="text-align: center; margin: 20px 0;">
+				<img src="assets/pow-pos.jpg" alt="Wizualizacja  PoS i Pow" width="100%">
+				</p>
+                <p style="text-align: center;"><em>Powyższy diagram porównuje energochłonne "kopanie" w PoW z modelem opartym na kaucji (staking) w PoS.</em></p>
+
+                <hr>
+
+                <h3>🌐 Rola Węzłów (Nodes)</h3>
+                <p>Oprócz Górników i Walidatorów (którzy piszą nowe bloki), w sieci istnieją też zwykłe <strong>Węzły</strong>. To komputery, które przechowują kopię blockchaina i <strong>patrzą władzy na ręce</strong>.</p>
+                <ul>
+                    <li>Gdy Górnik zgłasza nowy blok, Węzły sprawdzają: "Czy ten blok jest poprawny? Czy Górnik nie oszukuje?".</li>
+                    <li>Jeśli blok jest wadliwy, Węzły go odrzucają, nawet jeśli Górnik zużył na niego mnóstwo prądu.</li>
+                </ul>
+                <p>To sprawia, że Blockchain jest systemem <strong>demokratycznym</strong>.</p>
+
+                <hr>
+                
+                <div style="padding: 15px; background: #FEEBCF; border-radius: 4px;">
+                    <h4>📝 Kluczowe wnioski z tej lekcji:</h4>
+                    <ul>
+                        <li><strong>Mechanizm Zgody:</strong> To sposób na osiągnięcie porozumienia w grupie nieznajomych bez centralnego szefa.</li>
+                        <li><strong>Proof of Work (Bitcoin):</strong> Bezpieczeństwo oparte na energii i pracy komputerów (Górnicy). Bardzo bezpieczne, ale energochłonne.</li>
+                        <li><strong>Proof of Stake (Ethereum):</strong> Bezpieczeństwo oparte na zastawionym kapitale (Walidatorzy). Energooszczędne i szybkie.</li>
+                        <li><strong>Górnik/Walidator:</strong> To podmioty, które dodają nowe bloki.</li>
+                        <li><strong>Węzeł (Node):</strong> To "strażnik", który sprawdza poprawność bloków i przechowuje kopię księgi.</li>
+                    </ul>
+                </div>
+            `,
+        };
+
+        // -----------------------------------------------------------------------------
+        // 2. PYTANIA QUIZOWE (Moduły 1.1 - 1.3)
+        // -----------------------------------------------------------------------------
+        const quizData = {
+            // ... (QUIZ DATA BEZ ZMIAN) ...
+            '1.1': [
+                {
+                    question: "Jaki jest główny problem z przesyłaniem pieniędzy w sposób taki sam, jak wysyłanie e-maila lub zdjęcia?",
+                    options: ["Pliki zajmują zbyt dużo miejsca na dysku.", "Problem 'Podwójnego Wydawania' (Double Spending).", "Internet jest zbyt wolny do przesyłania wartości.", "Zdjęcia tracą na jakości przy przesyłaniu."],
+                    correctIndex: 1,
+                    explanation: "W świecie cyfrowym łatwo o kopię, ale pieniądz cyfrowy musi być unikalny. Double Spending to próba dwukrotnego użycia tych samych środków."
+                },
+                {
+                    question: "Która analogia najlepiej opisuje system scentralizowany (np. tradycyjny bank)?",
+                    options: ["Wspólny dokument Google, do którego dostęp ma każdy.", "Plik Excel na jednym komputerze szefa, zabezpieczony hasłem.", "Tablica ogłoszeń na rynku miejskim.", "Rozmowa dwóch osób w cztery oczy."],
+                    correctIndex: 1,
+                    explanation: "W systemie scentralizowanym (banku) tylko jedna instytucja ('szef') ma dostęp do głównej księgi i może w niej dokonywać zmian."
+                },
+                {
+                    question: "Czym jest 'Ledger' w kontekście blockchaina?",
+                    options: ["Programem antywirusowym chroniącym sieć.", "Nazwą pierwszej kryptowaluty.", "Cyfrowym portfelem do trzymania haseł.", "Księgą Główną – rejestrem wszystkich transakcji od początku istnienia sieci."],
+                    correctIndex: 3,
+                    explanation: "Ledger to po prostu księga rachunkowa (rejestr), która zawiera historię wszystkich przepływów środków. W blockchainie jest ona publiczna i niezmienna."
+                },
+                {
+                    question: "Co oznacza skrót P2P (Peer-to-Peer)?",
+                    options: ["Pay-to-Play (Płać, aby grać).", "Person-to-Person (Osoba do Osoby), bez centralnego serwera pośredniczącego.", "Private-to-Public (Z prywatnego na publiczny).", "Phone to Phone."],
+                    correctIndex: 1,
+                    explanation: "Peer-to-Peer oznacza sieć równorzędną, gdzie użytkownicy wymieniają się danymi lub wartością bezpośrednio między sobą, pomijając pośredników."
+                },
+                {
+                    question: "Dlaczego porównujemy Blockchain do 'Wspólnego Dokumentu Google' (Google Docs)?",
+                    options: ["Ponieważ należy do firmy Google.", "Ponieważ jest łatwy w edycji i można w nim wszystko skasować.", "Ponieważ wszyscy widzą ten sam stan dokumentu w tym samym czasie i każdy ma wgląd w zmiany.", "Ponieważ służy głównie do pisania tekstu."],
+                    correctIndex: 2,
+                    explanation: "Siłą blockchaina jest to, że jest to baza rozproszona. Wszyscy uczestnicy sieci widzą te same dane w czasie rzeczywistym, co gwarantuje transparentność i zgodność."
+                },
+                {
+                    question: "Kim jest Satoshi Nakamoto?",
+                    options: ["Elon Musk.", "Bill Gates.", "Twórcą (lub grupą twórców) Bitcoina, który opublikował dokument w 2008 roku.", "Steve Jobs."],
+                    correctIndex: 2,
+                    explanation: "Satoshi Nakamoto to pseudonim osoby lub grupy osób, która stworzyła Bitcoina i rozwiązała problem podwójnego wydawania bez użycia instytucji zaufania publicznego."
+                },
+                {
+                    question: "Na czym opiera się zaufanie w technologii blockchain?",
+                    options: ["Na autorytecie rządu i banku centralnego.", "Na reputacji prezesa firmy zarządzającej blockchainem.", "Na matematyce i kryptografii, która jest bezstronna.", "Na umowach prawnych podpisywanych na papierze."],
+                    correctIndex: 2,
+                    explanation: "Blockchain eliminuje konieczność ufania ludziom (pośrednikom). Zamiast tego ufamy kodowi i algorytmom matematycznym, które gwarantują poprawność transakcji."
+                },
+                {
+                    question: "Co oznacza, że księga blockchain jest 'niezmienna'?",
+                    options: ["Że nikt nie może dodawać do niej nowych transakcji.", "Że raz zapisanej transakcji nie da się wymazać ani edytować (jak wyrycie w kamieniu).", "Że kurs kryptowalut nigdy się nie zmienia.", "Że dostęp do niej mają tylko programiści."],
+                    correctIndex: 1,
+                    explanation: "Niezmienność (immutability) to kluczowa cecha. Historia transakcji nie może zostać cofnięta ani sfałszowana wstecznie, co daje pewność, że zapisy są prawdziwe."
+                },
+                {
+                    question: "Jaką rolę pełnią pośrednicy (np. Visa, PayPal) w tradycyjnym systemie?",
+                    options: ["Weryfikują, czy nadawca ma środki, prowadząc własne, prywatne księgi.", "Drukują fizyczne pieniądze.", "Nie pełnią żadnej ważnej roli, są zbędni.", "Służą tylko do przechowywania zdjęć dokumentów."],
+                    correctIndex: 0,
+                    explanation: "W obecnym systemie pośrednicy są niezbędni, aby potwierdzić, że 'Jan ma pieniądze'. Blockchain zastępuje ich rolę rozproszoną siecią komputerów."
+                },
+                {
+                    question: "Co dzieje się, gdy w systemie scentralizowanym (np. na serwerze banku) nastąpi awaria i utrata danych bez kopii zapasowej?",
+                    options: ["Nic, dane są automatycznie odtwarzane z komputerów klientów.", "Dane mogą zostać bezpowrotnie utracone, ponieważ istniały tylko w jednym miejscu.", "System przełącza się automatycznie na blockchain.", "Użytkownicy sami wpisują, ile mieli pieniędzy."],
+                    correctIndex: 1,
+                    explanation: "To główna wada centralizacji (Single Point of Failure). Jeśli centralny serwer padnie i nie ma backupu, dane znikają. W blockchainie kopię bazy mają tysiące komputerów."
+                }
+            ],
+            '1.2': [
+                {
+                    question: "Z jakich trzech głównych elementów składa się typowy blok w blockchainie?",
+                    options: ["Dane transakcji, Hash tego bloku, Hasło administratora", "Dane transakcji, Hash tego bloku, Hash poprzedniego bloku", "Tylko dane transakcji i data utworzenia", "Nazwa bloku, Imię twórcy, Kopie zapasowe"],
+                    correctIndex: 1,
+                    explanation: "Blok zawiera ładunek (Dane), swój unikalny Hash oraz Hash poprzedniego bloku, który łączy go z łańcuchem i jest kluczowy dla bezpieczeństwa."
+                },
+                {
+                    question: "Czym jest Hash w kontekście technologii blockchain?",
+                    options: ["Zaszyfrowaną wiadomością, którą można odczytać hasłem", "Kluczem prywatnym do portfela", "Cyfrowym odciskiem palca danych o stałej długości", "Numerem seryjnym nadawanym przez bank"],
+                    correctIndex: 2,
+                    explanation: "Hash to unikalny ciąg znaków, który powstaje w wyniku działania funkcji matematycznej. Służy do identyfikacji i weryfikacji integralności danych."
+                },
+                {
+                    question: "Na czym polega 'Efekt Motyla' w hashowaniu?",
+                    options: ["Mała zmiana danych powoduje małą zmianę w Hashu", "Hash zmienia się losowo co kilka minut bez powodu", "Nawet najmniejsza zmiana w danych wejściowych całkowicie zmienia wynikowy Hash", "Zmiana danych nie ma wpływu na Hash"],
+                    correctIndex: 2,
+                    explanation: "Ta cecha (wrażliwość) gwarantuje bezpieczeństwo – zmiana choćby przecinka powoduje powstanie zupełnie innego skrótu, co unieważnia łańcuch."
+                },
+                {
+                    question: "Do czego służy 'Hash poprzedniego bloku'?",
+                    options: ["Służy do logowania", "Łączy obecny blok z poprzednim, tworząc łańcuch", "Jest to podpis górnika", "Jest to tylko data utworzenia"],
+                    correctIndex: 1,
+                    explanation: "To właśnie ten element sprawia, że bloki są ułożone w określonej kolejności i zależne od siebie nawzajem, tworząc nierozerwalny łańcuch."
+                },
+                {
+                    question: "Co się stanie, jeśli haker zmieni dane w starym bloku (np. Bloku nr 1)?",
+                    options: ["Nik się nie zorientuje, jeśli zmiana będzie mała", "System automatycznie zaakceptuje nową wersję", "Zmieni się tylko ten jeden blok, reszta pozostanie bez zmian", "Zmieni się Hash tego bloku, co zerwie połączenie z następnym blokiem"],
+                    correctIndex: 3,
+                    explanation: "Zmiana w Bloku nr 1 generuje nowy Hash. Blok nr 2 ma zapisany stary Hash, co prowadzi do niezgodności i natychmiastowego zerwania łańcucha."
+                },
+                {
+                    question: "Co to znaczy, że funkcja Hash jest jednokierunkowa?",
+                    options: ["Z Hasha nie można odtworzyć pierwotnych danych", "Dane można przesyłać tylko od nadawcy do odbiorcy", "Hash można wygenerować tylko raz w życiu", "Z Hasha łatwo odczytać ukrytą treść"],
+                    correctIndex: 0,
+                    explanation: "Proces hashowania jest nieodwracalny. Można zweryfikować poprawność danych, ale nie można odzyskać danych źródłowych na podstawie samego skrótu."
+                },
+                {
+                    question: "W analogii 'Szklanego Sejfu', co gwarantuje bezpieczeństwo wieży sejfów?",
+                    options: ["Sejfy są wykonane z niezniszczalnego szkła", "Dno górnego sejfu pasuje tylko do unikalnego graweru na sejfie poniżej", "Strażnik pilnuje sejfów przez całą dobę", "Sejfy są ukryte pod ziemią"],
+                    correctIndex: 1,
+                    explanation: "Ta fizyczna zależność obrazuje, jak Hash poprzedniego bloku jest 'wbudowany' w strukturę bloku następnego, uniemożliwiając manipulację wsteczną."
+                },
+                {
+                    question: "Dlaczego sfałszowanie historii w blockchainie jest tak trudne?",
+                    options: ["Wystarczy, że zmieni dane tylko w jednym konkretnym bloku", "Wystarczy ukraść klucz administratora sieci", "Trzeba przeliczyć Hash sfałszowanego bloku oraz wszystkich kolejnych bloków w łańcuchu", "Trzeba tylko znać hasło"],
+                    correctIndex: 2,
+                    explanation: "Próba oszustwa wymagałaby naprawienia całego zerwanego łańcucha, co wymaga ogromnej mocy obliczeniowej, większej niż ma cała sieć."
+                },
+                {
+                    question: "Do czego w lekcji porównano działanie funkcji skrótu (hash)?",
+                    options: ["Do kalkulatora procentowego", "Do maszynki do mięsa", "Do drukarki 3D", "Do kserokopiarki"],
+                    correctIndex: 1,
+                    explanation: "Maszynka do mięsa to analogia procesu jednokierunkowego przetwarzania różnych składników (danych) w jednolitą formę (Hash)."
+                },
+                {
+                    question: "Co oznacza termin 'niezmienność' (immutability) w blockchainie?",
+                    options: ["Stałą ceną kryptowaluty", "Brak możliwości dodawania nowych transakcji", "Gwarancją, że historia transakcji nie może zostać cofnięta ani sfałszowana", "Zakazem aktualizacji oprogramowania węzłów"],
+                    correctIndex: 2,
+                    explanation: "Niezmienność to fundament zaufania – raz zapisana transakcja (blok) jest trwała i nie można jej modyfikować, czyniąc historię transakcji wiarygodną."
+                }
+            ],
+            '1.3': [
+                {
+                    question: "Dlaczego blockchain potrzebuje 'Mechanizmu Zgody', a tradycyjny bank nie?",
+                    options: ["Ponieważ blockchain jest zbyt wolny, aby działać bez zgody", "Aby zaszyfrować dane transakcji", "Ponieważ w sieci zdecentralizowanej nie ma centralnego szefa, który decyduje o prawdzie", "Banki też używają Proof of Work do zatwierdzania przelewów."],
+                    correctIndex: 2,
+                    explanation: "Mechanizm zgody (consensus) jest niezbędny, aby tysiące obcych sobie komputerów mogły osiągnąć porozumienie co do jednej, poprawnej wersji historii, bez polegania na centralnym autorytecie."
+                },
+                {
+                    question: "W systemie Proof of Work (PoW), co powstrzymuje górnika przed oszukiwaniem?",
+                    options: ["Górnicy muszą podpisać umowę prawną przed dołączeniem do sieci", "Ekonomia – koszt zużytego prądu i sprzętu byłby wyższy niż potencjalny zysk z oszustwa", "Strach przed policją internetową", "Kod jest tajny, więc nie da się oszukiwać"],
+                    correctIndex: 1,
+                    explanation: "Bezpieczeństwo PoW opiera się na rachunku ekonomicznym: atak na sieć jest tak drogi, że staje się nieopłacalny."
+                },
+                {
+                    question: "Jaka jest główna różnica w wyłanianiu twórcy nowego bloku między PoW a PoS?",
+                    options: ["W PoW decyduje staż w sieci, a w PoS szybkość internetu", "W PoW decyduje moc obliczeniowa (wyścig), a w PoS losowanie oparte na zastawionym kapitale", "W W PoW bloki tworzą ludzie, a w PoS sztuczna inteligencja", "W PoS bloki tworzą tylko Walidatorzy, w PoW nikt"],
+                    correctIndex: 1,
+                    explanation: "PoW to wyścig na moc obliczeniową (prąd), a PoS to loteria ważona tym, ile uczestnik zastawił (staking)."
+                },
+                {
+                    question: "Co jest główną zaletą Proof of Stake (PoS) nad Proof of Work (PoW)?",
+                    options: ["Bloki są bardziej skomplikowane i zawierają więcej danych", "Sieć jest bardziej scentralizowana", "Jest mniej bezpieczny", "Znacznie niższe zużycie energii"],
+                    correctIndex: 3,
+                    explanation: "PoS nie wymaga rozwiązywania energochłonnych zagadek, co drastycznie obniża zużycie prądu o ponad 99%."
+                },
+                {
+                    question: "Kim jest 'Walidator' w sieci Proof of Stake?",
+                    options: ["Górnikiem używającym bardzo starego komputera", "Uczestnikiem, który wpłacił kaucję (staking) i sprawdza/tworzy nowe bloki", "Pracownikiem banku centralnego nadzorującym sieć", "Osobą, która ręcznie sprawdza każdą transakcję w Excelu"],
+                    correctIndex: 1,
+                    explanation: "Walidator zastępuje Górnika – blokuje swoje środki (stake) jako gwarancję uczciwości w zamian za prawo do tworzenia bloków."
+                },
+                {
+                    question: "Co grozi Walidatorowi w systemie PoS, jeśli spróbuje zatwierdzić fałszywą transakcję?",
+                    options: ["Dostanie ostrzeżenie mailowe od twórcy Ethereum", "Sieć odbierze mu zastawione środki (tzw. Slashing).", "Nic mu nie grozi, po prostu transakcja nie przejdzie.", "Zostanie zmuszony do kopania w kopalni węgla."],
+                    correctIndex: 1,
+                    explanation: "Mechanizm Slashingu (uśmiercenia) jest karą finansową. Walidator ryzykuje utratę własnych pieniędzy, jeśli działa na szkodę sieci."
+                },
+                {
+                    question: "Jaka jest rola zwykłych Węzłów (Nodes), które nie są górnikami ani walidatorami?",
+                    options: ["Generują darmowe kryptowaluty dla właściciela", "Przechowują kopię księgi i sprawdzają poprawność bloków przesyłanych przez twórców.", "Służą tylko do ozdoby i nie pełnią żadnej funkcji.", "Decydują o cenie Bitcoina na giełdzie."],
+                    correctIndex: 1,
+                    explanation: "Węzły działają jako 'audytorzy' i strażnicy. Weryfikują, czy bloki dodane przez górników/walidatorów są zgodne z regułami, chroniąc sieć przed korupcją."
+                },
+                {
+                    question: "Do czego w lekcji porównano zadanie, jakie wykonują koparki w systemie Proof of Work?",
+                    options: ["Do układania puzzli z 10 elementów.", "Do rozwiązywania piekielnie trudnego Sudoku.", "Do kopania rowów łopatą.", "Do gry w szachy z mistrzem świata."],
+                    correctIndex: 1,
+                    explanation: "To analogia szukania rzadkiego rozwiązania matematycznego, które jest trudne do znalezienia, ale łatwe do szybkiej weryfikacji przez resztę sieci."
+                },
+                {
+                    question: "Co oznacza termin 'Staking'?",
+                    options: ["Obstawianie zakładów bukmacherskich na cenę kryptowalut", "Zablokowanie własnych środków jako kaucji w zamian za szansę walidacji transakcji", "Kupowanie sprzętu komputerowego do kopania", "Jedzenie steków przez programistów blockchain."],
+                    correctIndex: 1,
+                    explanation: "Staking to zablokowanie kapitału w celu zabezpieczenia sieci PoS i uzyskania możliwości udziału w walidacji nowych transakcji."
+                },
+                {
+                    question: "W jaki sposób zwykłe Węzły sprawdzają, czy Górnik rzeczywiście wykonał pracę (PoW)?",
+                    options: ["Węzły muszą powtórzyć całą pracę górnika, zużywając tyle samo prądu.", "Węzły dzwonią do górnika i pytają, czy nie kłamie.", "Sprawdzenie wyniku jest bardzo łatwe i szybkie, mimo że znalezienie go było trudne.", "Nie sprawdzają tego, ufają górnikowi na słowo."],
+                    correctIndex: 2,
+                    explanation: "To kluczowa asymetria kryptografii: rozwiązanie jest trudne, ale jego weryfikacja (czyli sprawdzenie poprawności) jest dla każdego węzła szybka i tania."
+                }
+            ]
+        };
+
+        // -----------------------------------------------------------------------------
+        // 3. LOGIKA PORTALU (NIE ZMIENIAĆ!)
+        // -----------------------------------------------------------------------------
+
+        const moduleList = Array.from(document.querySelectorAll('.module-list li'));
+        const lessonContentDiv = document.getElementById('lesson-content');
+        const quizContainer = document.getElementById('quiz-container');
+        const quizForm = document.getElementById('quiz-form');
+        const quizResultDiv = document.getElementById('quiz-result');
+        const submitQuizButton = document.getElementById('submit-quiz');
+        const navButtonsContainer = document.getElementById('nav-buttons-container');
+        const prevButton = document.getElementById('prev-module');
+        const nextButton = document.getElementById('next-module');
+
+        let currentModuleId = 'home'; 
+        let currentModuleIndex = -1; // -1 oznacza stronę główną
+
+        // Funkcja renderująca stronę główną (sylabus)
+        function renderHomePage() {
+            lessonContentDiv.innerHTML = lessonContent['home'];
+            quizContainer.style.display = 'none';
+            navButtonsContainer.style.display = 'none';
+            currentModuleId = 'home';
+            currentModuleIndex = -1; 
+
+            // Upewnij się, że żaden moduł w menu nie jest oznaczony jako 'active'
+            moduleList.forEach(li => li.classList.remove('active'));
+        }
+
+
+        // Nawigacja między modułami
+        function loadModule(moduleId) {
+            // Logika blokowania:
+            const moduleElement = document.querySelector(`[data-module-id="${moduleId}"]`);
+            const isLocked = moduleElement && moduleElement.closest('.module-list').classList.contains('locked');
+            
+            if (isLocked) {
+                alert('Ten poziom jest zablokowany. Ukończ poprzedni poziom (Poziom Podstawowy), zaliczając quiz z Modułu 1.3, aby go odblokować.');
+                return; 
+            }
+            // Koniec logiki blokowania.
+
+            currentModuleId = moduleId;
+            const content = lessonContent[moduleId];
+            const quiz = quizData[moduleId];
+
+            // Ładowanie treści lekcji
+            if (content) {
+                lessonContentDiv.innerHTML = content;
+            } else {
+                lessonContentDiv.innerHTML = `<h2>Moduł ${moduleId}</h2><p>Treść modułu nie została jeszcze wygenerowana.</p>`;
+            }
+
+            // Ładowanie quizu
+            if (quiz) {
+                renderQuiz(quiz);
+                quizContainer.style.display = 'block';
+            } else {
+                quizContainer.style.display = 'none';
+            }
+
+            // Aktualizacja klasy 'active'
+            moduleList.forEach((li, index) => {
+                li.classList.remove('active');
+                if (li.dataset.moduleId === moduleId) {
+                    li.classList.add('active');
+                    currentModuleIndex = index;
+                }
+            });
+
+            // Aktualizacja przycisków
+            updateNavButtons();
+            
+            // Pokaż przyciski nawigacyjne dla modułów
+            navButtonsContainer.style.display = 'flex';
+            
+            // Przewiń na górę
+            window.scrollTo(0, 0); 
+        }
+
+        // Renderowanie Quizu
+        function renderQuiz(questions) {
+            quizForm.innerHTML = '';
+            quizResultDiv.style.display = 'none';
+            submitQuizButton.style.display = 'block';
+
+            questions.forEach((q, qIndex) => {
+                const qDiv = document.createElement('div');
+                qDiv.className = 'quiz-question';
+                qDiv.innerHTML = `<p><strong>Pytanie ${qIndex + 1}:</strong> ${q.question}</p><div class="quiz-options"></div>`;
+                
+                const optionsDiv = qDiv.querySelector('.quiz-options');
+                
+                q.options.forEach((option, oIndex) => {
+                    const optionId = `q${qIndex}-o${oIndex}`;
+                    const label = document.createElement('label');
+                    label.innerHTML = `<input type="radio" name="question${qIndex}" value="${oIndex}" id="${optionId}"> ${String.fromCharCode(65 + oIndex)}. ${option}`;
+                    optionsDiv.appendChild(label);
+                });
+
+                quizForm.appendChild(qDiv);
+            });
+        }
+
+        // Sprawdzanie Quizu
+        submitQuizButton.addEventListener('click', () => {
+            let score = 0;
+            const questions = quizData[currentModuleId];
+            const totalQuestions = questions.length;
+            const answers = {};
+
+            // Zbieranie odpowiedzi
+            questions.forEach((q, qIndex) => {
+                const selectedOption = document.querySelector(`input[name="question${qIndex}"]:checked`);
+                answers[qIndex] = selectedOption ? parseInt(selectedOption.value) : null;
+            });
+
+            // Ocena i wyświetlanie wyniku
+            quizForm.querySelectorAll('.quiz-question').forEach((qDiv, qIndex) => {
+                const questionData = questions[qIndex];
+                const isCorrect = answers[qIndex] === questionData.correctIndex;
+
+                qDiv.style.backgroundColor = isCorrect ? '#E6FFFA' : '#FED7D7'; 
+
+                if (isCorrect) {
+                    score++;
+                }
+
+                // Wyświetlanie poprawnej odpowiedzi i wyjaśnienia
+                let explanationDiv = qDiv.querySelector('.correct-answer-explanation');
+                if (!explanationDiv) {
+                    explanationDiv = document.createElement('div');
+                    explanationDiv.className = 'correct-answer-explanation';
+                    qDiv.appendChild(explanationDiv);
+                }
+
+                explanationDiv.innerHTML = `
+                    <p><strong>Wyjaśnienie:</strong> ${questionData.explanation}</p>
+                    <p style="color: ${isCorrect ? 'green' : 'red'}; margin-top: 5px;">
+                        ${isCorrect ? 'Twoja odpowiedź jest poprawna!' : `Poprawna odpowiedź: ${String.fromCharCode(65 + questionData.correctIndex)}. ${questionData.options[questionData.correctIndex]}`}
+                    </p>
+                `;
+                
+            });
+
+            quizResultDiv.style.display = 'block';
+            quizResultDiv.innerHTML = `Uzyskany wynik: ${score} / ${totalQuestions}.`;
+            quizResultDiv.style.backgroundColor = score > totalQuestions * 0.7 ? '#9AE6B4' : '#FEB2B2'; 
+
+            submitQuizButton.style.display = 'none'; 
+            
+            // Sprawdzenie, czy należy odblokować kolejny poziom
+            checkUnlock(currentModuleId, score, totalQuestions);
+        });
+
+        // Funkcja sprawdzająca, czy należy odblokować kolejny poziom
+        function checkUnlock(moduleId, score, totalQuestions) {
+            const passingScore = totalQuestions * 0.7; // Wymagane 70%
+
+            if (score >= passingScore) {
+                // Logika odblokowywania Poziomu 2 (po zaliczeniu 1.3)
+                if (moduleId === '1.3') {
+                    unlockLevel(2);
+                    alert('🎉 Gratulacje! Ukończyłeś Poziom Podstawowy! Poziom Średni został odblokowany.');
+                } 
+                // Logika odblokowywania Poziomu 3 (po zaliczeniu 2.3)
+                else if (moduleId === '2.3') {
+                    unlockLevel(3);
+                    alert('🚀 Gratulacje! Ukończyłeś Poziom Średni! Poziom Zaawansowany został odblokowany.');
+                }
+            }
+        }
+
+        // Funkcja usuwająca blokadę z całego poziomu
+        function unlockLevel(levelNumber) {
+            const levelElement = document.querySelector(`.module-list[data-level="${levelNumber}"]`);
+            if (levelElement) {
+                levelElement.classList.remove('locked');
+                
+                // Usunięcie ikon kłódek z modułów danego poziomu
+                const lockIcons = levelElement.querySelectorAll('.lock-icon');
+                lockIcons.forEach(icon => icon.remove());
+                
+                // Przywrócenie normalnego kursora dla odblokowanych modułów
+                levelElement.querySelectorAll('li').forEach(li => {
+                    li.style.cursor = 'pointer';
+                });
+            }
+        }
+
+
+        // Obsługa kliknięć w menu bocznym
+        moduleList.forEach(li => {
+            li.addEventListener('click', (e) => {
+                loadModule(e.target.dataset.moduleId);
+            });
+        });
+
+        // Aktualizacja przycisków nawigacyjnych
+        function updateNavButtons() {
+            prevButton.disabled = currentModuleIndex <= 0;
+            nextButton.disabled = currentModuleIndex === moduleList.length - 1;
+        }
+
+        // Obsługa przycisków Poprzednia/Następna
+        prevButton.addEventListener('click', () => {
+            if (currentModuleIndex > 0) {
+                loadModule(moduleList[currentModuleIndex - 1].dataset.moduleId);
+            }
+        });
+
+        nextButton.addEventListener('click', () => {
+            if (currentModuleIndex < moduleList.length - 1) {
+                loadModule(moduleList[currentModuleIndex + 1].dataset.moduleId);
+            }
+        });
+
+        // Inicjalizacja: załaduj stronę główną przy starcie
+        window.onload = renderHomePage; 
+    </script>
+
+</body>
+</html>
